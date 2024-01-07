@@ -2,6 +2,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import authRouter from './routes/auth.route.js'
+import serviceRouter from './routes/service.route.js'
 
 // dotenv configuration
 dotenv.config()
@@ -16,6 +17,7 @@ mongoose.connect(process.env.MONGO)
     .catch((error) => console.log(error))
 
 app.use('/backend/auth', authRouter)
+app.use('/backend/service', serviceRouter)
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
