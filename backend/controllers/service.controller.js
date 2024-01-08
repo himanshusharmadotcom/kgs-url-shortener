@@ -3,7 +3,7 @@ import urlData from '../models/url.model.js'
 import crypto from 'crypto'
 import { URL } from 'url'
 
-function generateHash(url){
+function generateHash(url) {
     const hash = crypto.createHash('sha256').update(url).digest('hex');
     return hash.substring(0, 8)
 }
@@ -40,7 +40,49 @@ export const shortController = async (req, res, next) => {
             console.log(error)
             res.status(500).json('Server Error')
         }
-    }else{
+    } else {
         res.status(400).json('Invalid Original Url')
     }
 }
+
+export const allController = async (req, res, next) => {
+    try {
+        const data = await urlData.find({})
+        res.json(data)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const redirectController = async (req, res, next) => {
+    try {
+        const storedUrl = await urlData.findOne({ urlId: req.params.urlId });
+        if (storedUrl) {
+            const origQueryParams = extractQueryParams(storedUrl.origUrl);
+            if (origQueryParams === storedUrl.queryParams) {
+                storedUrl.clicks++;
+                await storedUrl.save();
+                return res.redirect(storedUrl.origUrl);
+            } else {
+                return res.status(400).json('Query parameters mismatch');
+            }
+        } else {
+            return res.status(404).json("Not found");
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const deleteController = async (req, res, next) => {
+    try {
+        const deleteStatus = await urlData.findOneAndDelete({ urlId: req.params.urlId });
+        if (!deleteStatus) {
+            return res.status(404).json("Document not found or something went wrong");
+        }
+        return res.status(200).json('Success');
+    } catch (error) {
+        next(error);
+    }
+};
+

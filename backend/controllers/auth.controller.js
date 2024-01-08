@@ -35,3 +35,12 @@ export const signinController = async (req, res, next) => {
         next(error)
     }
 }
+
+export const signoutController = (req, res, next) => {
+    try {
+        res.clearCookie('access_token')
+        res.status(200).json('User has been logged Out')
+    } catch (error) {
+        next(error)
+    }
+}
