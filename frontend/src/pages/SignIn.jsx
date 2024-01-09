@@ -1,8 +1,51 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import { NavLink } from 'react-router-dom';
+import axios from 'axios';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 export default function SignIn() {
+
+  const [formData, setFormData] = useState({});
+  const [error, setError] = useState();
+  const [loading, setLoading] = useState();
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true)
+      const response = await axios.post(
+        'http://localhost:3000/backend/auth/signin',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(response)
+      if (response.status <= 200 && response.status >= 300) {
+        setLoading(false)
+        setError("An error occurred")
+        return;
+      }
+      setLoading(false);
+      setError(null);
+      navigate('/');
+    } catch (error) {
+      setLoading(false);
+      // console.error('Axios Error:', error);
+      setError(error.message);
+    }
+  }
+
   return (
     <Wrapper>
       <div className="container">
@@ -10,13 +53,16 @@ export default function SignIn() {
           <div className="form-head">
             <h1>Sign In</h1>
           </div>
-          <form action="" className='flex'>
-            <input type="email" placeholder='Enter your email*' />
-            <input type="password" placeholder='Enter your password*' />
-            <input type="submit" value="SIGN In" />
+          <form onSubmit={handleSubmit} className='flex'>
+            <input type="email" placeholder='Enter your email*' id='email' onChange={handleChange}/>
+            <input type="password" placeholder='Enter your password*' id='password' onChange={handleChange}/>
+            <input type="submit" value={loading ? 'Loading...' : 'SIGN IN'} />
           </form>
           <div className="form-bottom flex">
             <p>Dont have an account?</p><NavLink to='/sign-up'>Sign Up</NavLink>
+          </div>
+          <div className="error-status">
+            {error ? (<p>{error}</p>) : ''}
           </div>
         </div>
       </div>
@@ -77,6 +123,14 @@ const Wrapper = styled.section`
         color: ${({ theme }) => theme.colors.primaryColor};
         text-decoration: underline;
        }
+    }
+
+    .error-status{
+      margin-top: 20px;
+      p{
+        color: #f00;
+        font-size: ${({ theme }) => theme.fontSize.textFontSize};
+      }
     }
   }
 `;
