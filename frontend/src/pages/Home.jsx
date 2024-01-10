@@ -1,15 +1,81 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { IoMdCopy } from "react-icons/io";
+import axios from 'axios';
 
 export default function Home() {
+  const [urlList, setUrlsList] = useState([]);
+  const [urlToShorten, setUrlToShorten] = useState("");
+
+  const getAllUrls = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/backend/service/all');
+
+      setUrlsList(response.data);
+
+      console.log(response);
+
+      if (!(response.status >= 200 && response.status < 300)) {
+        console.log("An error occurred");
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getAllUrls();
+  }, []);
+
+  const handleCopyClick = async (shortUrl) => {
+    try {
+      await navigator.clipboard.writeText(shortUrl);
+      alert('URL copied to clipboard');
+    } catch (error) {
+      console.error('Unable to copy: ', error);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!urlToShorten) {
+      alert("Please enter the Url");
+      return;
+    }
+
+    axios
+      .post("http://localhost:3000/backend/service/short", { origUrl: urlToShorten })
+      .then(res => {
+        console.log(res.data);
+        getAllUrls();
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
+
+    setUrlToShorten("")
+  }
+  // console.log(urlToShorten)
+
+  const handleDelete = async (urlId) => {
+    await axios.delete(`http://localhost:3000/backend/service/delete/${urlId}`)
+      .then((res) => {
+        console.log(res.data)
+        getAllUrls();
+      }).catch((error) => {
+        console.log(error)
+      })
+  }
+
   return (
     <Wrapper>
       <div className="container">
         <div className="url-body">
           <div className="url-form">
-            <form action="" className='flex flex-h-align'>
-              <input type="text" placeholder='https://siteexample.com' />
+            <form onSubmit={handleSubmit} className='flex flex-h-align'>
+              <input type="text" placeholder='https://siteexample.com' value={urlToShorten} onChange={e => setUrlToShorten(e.target.value)} />
               <input type="submit" value="Shorten" />
             </form>
           </div>
@@ -20,50 +86,26 @@ export default function Home() {
                   <th>Sr. No.</th>
                   <th>Original Url</th>
                   <th>Shorten Url</th>
+                  <th>Clicks</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1.</td>
-                  <td>example.com</td>
-                  <td>localhost:3000/kjahiu <span className='copyUrl'><IoMdCopy /></span></td>
-                  <td>
-                    <button type='button' className='dltBtn'>Delete</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>2.</td>
-                  <td>example.com</td>
-                  <td>localhost:3000/kjahiu <span className='copyUrl'><IoMdCopy /></span></td>
-                  <td>
-                    <button type='button' className='dltBtn'>Delete</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>3.</td>
-                  <td>example.com</td>
-                  <td>localhost:3000/kjahiu <span className='copyUrl'><IoMdCopy /></span></td>
-                  <td>
-                    <button type='button' className='dltBtn'>Delete</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>4.</td>
-                  <td>example.com</td>
-                  <td>localhost:3000/kjahiu <span className='copyUrl'><IoMdCopy /></span></td>
-                  <td>
-                    <button type='button' className='dltBtn'>Delete</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>5.</td>
-                  <td>example.com</td>
-                  <td>localhost:3000/kjahiu <span className='copyUrl'><IoMdCopy /></span></td>
-                  <td>
-                    <button type='button' className='dltBtn'>Delete</button>
-                  </td>
-                </tr>
+                {urlList.map((item, index) => (
+                  <tr key={item._id}>
+                    <td>{index + 1}.</td>
+                    <td>{item.origUrl}</td>
+                    <td>{item.shortUrl}
+                      <span className='copyUrl' onClick={() => handleCopyClick(item.shortUrl)}>
+                        <IoMdCopy />
+                      </span>
+                    </td>
+                    <td>{item.clicks}</td>
+                    <td>
+                      <button type='button' className='dltBtn' onClick={() => handleDelete(item.urlId)}>Delete</button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -133,10 +175,14 @@ const Wrapper = styled.section`
           }
 
           &:nth-child(2) {
-            width: 60%;
+            width: 50%;
           }
 
           &:nth-child(3) {
+            width: 10%;
+          }
+
+          &:nth-child(4) {
             width: 20%;
           }
 
@@ -165,8 +211,8 @@ const Wrapper = styled.section`
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: ${({theme}) => theme.colors.tertiaryColor};
-            color: ${({theme}) => theme.colors.primaryColor};
+            background-color: ${({ theme }) => theme.colors.tertiaryColor};
+            color: ${({ theme }) => theme.colors.primaryColor};
           }
         }
       }

@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import axios from 'axios';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../redux/user/userSlice';
 
 export default function SignIn() {
 
@@ -9,6 +11,7 @@ export default function SignIn() {
   const [error, setError] = useState();
   const [loading, setLoading] = useState();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({
@@ -31,13 +34,14 @@ export default function SignIn() {
         }
       );
       console.log(response)
-      if (response.status <= 200 && response.status >= 300) {
+      if (response.status < 200 || response.status >= 300) {
         setLoading(false)
         setError("An error occurred")
         return;
       }
       setLoading(false);
       setError(null);
+      dispatch(loginUser({name: response.data.username, email: response.data.email}));
       navigate('/');
     } catch (error) {
       setLoading(false);

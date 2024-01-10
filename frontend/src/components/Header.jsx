@@ -2,9 +2,13 @@ import React from 'react'
 import styled from 'styled-components';
 import { NavLink, useNavigate } from 'react-router-dom';
 import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../redux/user/userSlice';
 
 export default function Header() {
     const navigate = useNavigate();
+    const dispatch = useDispatch()
+    const user = useSelector(state => state.user)
     const handleSignOut = async () => {
         try {
             const response = await axios.get('http://localhost:3000/backend/auth/signout');
@@ -14,7 +18,7 @@ export default function Header() {
                 console.log("An error occurred");
                 return;
             }
-
+            dispatch(logoutUser());
             console.log('userLogged out');
             navigate('/');
         } catch (error) {
@@ -27,14 +31,16 @@ export default function Header() {
             <div className="container">
                 <div className="header-body flex flex-between">
                     <div className="logo">
-                        <NavLink activeClassName="active" to='/'><p>KGS<span>UrlShortener</span></p></NavLink>
+                        <NavLink to='/'><p>KGS<span>UrlShortener</span></p></NavLink>
                     </div>
                     <div className="menu-panel flex flex-v-align">
                         <ul className='flex'>
-                            <li><NavLink activeClassName="active" to='/'>Home</NavLink></li>
-                            <li><NavLink activeClassName="active" to='/about'>About</NavLink></li>
-                            <li><NavLink activeClassName="active" to='/sign-in'>Sign In</NavLink></li>
-                            <li><NavLink to='' onClick={handleSignOut}>Sign Out</NavLink></li>
+                            <li><NavLink to='/'>Home</NavLink></li>
+                            <li><NavLink to='/about'>About</NavLink></li>
+                            <li><NavLink to='/sign-in'>
+                                {user.isLoggedIn ? `Hi, ${user.name}` : 'Sign In'}
+                            </NavLink></li>
+                            {user.isLoggedIn ? <li><NavLink to='' onClick={handleSignOut}>Sign Out</NavLink></li> : ''}
                         </ul>
                     </div>
                 </div>
@@ -72,10 +78,6 @@ const Wrapper = styled.section`
                         font-size: ${({ theme }) => theme.fontSize.largeTextFontSize};
 
                         &:hover{
-                            text-decoration: underline;
-                        }
-
-                        &.active {
                             text-decoration: underline;
                         }
                     }

@@ -4,9 +4,9 @@ import { verifyToken } from '../Utils/verifyUser.js'
 
 const router = express.Router()
 
-router.post('/short', verifyToken, shortController)
-router.get('/all', verifyToken, allController)
+router.post('/short', shortController)
+router.get('/all', allController)
 router.get('/:urlId', redirectController)
-router.delete('/delete/:urlId', verifyToken, deleteController)
+router.delete('/delete/:urlId', deleteController)
 
 export default router
