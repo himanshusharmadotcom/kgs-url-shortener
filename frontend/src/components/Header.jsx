@@ -1,8 +1,27 @@
 import React from 'react'
 import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import axios from 'axios'
 
 export default function Header() {
+    const navigate = useNavigate();
+    const handleSignOut = async () => {
+        try {
+            const response = await axios.get('http://localhost:3000/backend/auth/signout');
+            console.log(response);
+
+            if (!(response.status >= 200 && response.status < 300)) {
+                console.log("An error occurred");
+                return;
+            }
+
+            console.log('userLogged out');
+            navigate('/');
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <Wrapper className='header'>
             <div className="container">
@@ -14,7 +33,8 @@ export default function Header() {
                         <ul className='flex'>
                             <li><NavLink activeClassName="active" to='/'>Home</NavLink></li>
                             <li><NavLink activeClassName="active" to='/about'>About</NavLink></li>
-                            <li><NavLink activeClassName="active" to='/sign-in'>SignIn</NavLink></li>
+                            <li><NavLink activeClassName="active" to='/sign-in'>Sign In</NavLink></li>
+                            <li><NavLink to='' onClick={handleSignOut}>Sign Out</NavLink></li>
                         </ul>
                     </div>
                 </div>
