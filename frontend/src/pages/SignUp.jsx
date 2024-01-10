@@ -24,7 +24,7 @@ export default function SignUp() {
     try {
       setLoading(true)
       const response = await axios.post(
-        '/backend/auth/signup',
+        'http://localhost:3000/backend/auth/signup',
         formData,
         {
           headers: {

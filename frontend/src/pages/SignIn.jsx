@@ -25,7 +25,7 @@ export default function SignIn() {
     try {
       setLoading(true)
       const response = await axios.post(
-        '/backend/auth/signin',
+        'http://localhost:3000/backend/auth/signin',
         formData,
         {
           headers: {

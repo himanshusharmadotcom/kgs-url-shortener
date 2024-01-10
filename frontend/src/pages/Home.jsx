@@ -9,7 +9,7 @@ export default function Home() {
 
   const getAllUrls = async () => {
     try {
-      const response = await axios.get('/backend/service/all');
+      const response = await axios.get('http://localhost:3000/backend/service/all');
 
       setUrlsList(response.data);
 
@@ -46,7 +46,7 @@ export default function Home() {
     }
 
     axios
-      .post("/backend/service/short", { origUrl: urlToShorten })
+      .post("http://localhost:3000/backend/service/short", { origUrl: urlToShorten })
       .then(res => {
         console.log(res.data);
         getAllUrls();
@@ -60,7 +60,7 @@ export default function Home() {
   // console.log(urlToShorten)
 
   const handleDelete = async (urlId) => {
-    await axios.delete(`/backend/service/delete/${urlId}`)
+    await axios.delete(`http://localhost:3000/backend/service/delete/${urlId}`)
       .then((res) => {
         console.log(res.data)
         getAllUrls();

@@ -5,8 +5,6 @@ import dotenv from 'dotenv'
 import authRouter from './routes/auth.route.js'
 import serviceRouter from './routes/service.route.js'
 import cookieParser from 'cookie-parser'
-import path from 'path';
-
 
 // dotenv configuration
 dotenv.config()
@@ -19,8 +17,6 @@ app.use(express.json())
 
 app.use(cookieParser())
 
-const __dirname = path.resolve();
-
 // db connection
 mongoose.connect(process.env.MONGO)
     .then(() => console.log('Database connected successfully!'))
@@ -32,12 +28,6 @@ app.use('/backend/service', serviceRouter)
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
     console.log(`Server listening at PORT:${PORT}`)
-})
-
-app.use(express.static(path.join(__dirname, '/frontend/dist')));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
 })
 
 app.use((err, req, res, next) => {
