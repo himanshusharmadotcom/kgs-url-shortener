@@ -15,7 +15,7 @@ function extractQueryParams(origUrl) {
 
 export const shortController = async (req, res, next) => {
     const { origUrl } = req.body
-    const base = 'http://localhost:3000/backend/service'
+    const base = '/backend/service'
     if (validateUrl(origUrl)) {
         try {
             let url = await urlData.findOne({ origUrl })
