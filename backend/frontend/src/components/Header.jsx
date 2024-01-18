@@ -11,7 +11,7 @@ export default function Header() {
     const user = useSelector(state => state.user)
     const handleSignOut = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/backend/auth/signout');
+            const response = await axios.get('/backend/auth/signout');
             console.log(response);
 
             if (!(response.status >= 200 && response.status < 300)) {
