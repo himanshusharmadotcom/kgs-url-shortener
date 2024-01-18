@@ -18,7 +18,7 @@ export const shortController = async (req, res, next) => {
     const { origUrl } = req.body
     // const base = '/backend/service'
 
-    const base = path.join(__dirname, 'backend', 'service');
+    const base = path.join(__dirname, 'backend/service');
     if (validateUrl(origUrl)) {
         try {
             let url = await urlData.findOne({ origUrl })
