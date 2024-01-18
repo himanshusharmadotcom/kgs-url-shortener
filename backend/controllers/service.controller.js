@@ -2,6 +2,7 @@ import validateUrl from '../Utils/util.js'
 import urlData from '../models/url.model.js'
 import crypto from 'crypto'
 import { URL } from 'url'
+import path from 'path'
 
 function generateHash(url) {
     const hash = crypto.createHash('sha256').update(url).digest('hex');
@@ -15,7 +16,9 @@ function extractQueryParams(origUrl) {
 
 export const shortController = async (req, res, next) => {
     const { origUrl } = req.body
-    const base = '/backend/service'
+    // const base = '/backend/service'
+
+    const base = path.join(__dirname, 'backend', 'service');
     if (validateUrl(origUrl)) {
         try {
             let url = await urlData.findOne({ origUrl })
