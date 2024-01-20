@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { IoMdCopy } from "react-icons/io";
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 export default function Home() {
   const [urlList, setUrlsList] = useState([]);
