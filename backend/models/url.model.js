@@ -22,7 +22,11 @@ const urlSchema = new mongoose.Schema(
         queryParams: {
             type: String,
             default: '', 
-        }
+        },
+        userRef: {
+            type: String,
+            required: true,
+        },
     },
     {timestamps: true}
 )

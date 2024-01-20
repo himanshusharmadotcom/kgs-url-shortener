@@ -41,7 +41,7 @@ export default function SignIn() {
       }
       setLoading(false);
       setError(null);
-      dispatch(loginUser({name: response.data.username, email: response.data.email}));
+      dispatch(loginUser({name: response.data.username, email: response.data.email, _id: response.data._id}));
       navigate('/');
     } catch (error) {
       setLoading(false);

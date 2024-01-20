@@ -14,7 +14,7 @@ function extractQueryParams(origUrl) {
 }
 
 export const shortController = async (req, res, next) => {
-    const { origUrl } = req.body
+    const { origUrl, userRef } = req.body
     const base = 'https://kgs-url-shortener.onrender.com/backend/service'
     if (validateUrl(origUrl)) {
         try {
@@ -31,6 +31,7 @@ export const shortController = async (req, res, next) => {
                     origUrl,
                     shortUrl,
                     queryParams,
+                    userRef,
                 })
 
                 await url.save()
@@ -46,8 +47,9 @@ export const shortController = async (req, res, next) => {
 }
 
 export const allController = async (req, res, next) => {
+    const{_id} = req.query
     try {
-        const data = await urlData.find({})
+        const data = await urlData.find({ userRef: _id })
         res.json(data)
     } catch (error) {
         next(error)

@@ -6,10 +6,11 @@ import axios from 'axios';
 export default function Home() {
   const [urlList, setUrlsList] = useState([]);
   const [urlToShorten, setUrlToShorten] = useState("");
+  const user = useSelector(state => state.user);
 
   const getAllUrls = async () => {
     try {
-      const response = await axios.get('/backend/service/all');
+      const response = await axios.get(`/backend/service/all?_id=${user._id}`);
 
       setUrlsList(response.data);
 
@@ -46,7 +47,7 @@ export default function Home() {
     }
 
     axios
-      .post("/backend/service/short", { origUrl: urlToShorten })
+      .post("/backend/service/short", { origUrl: urlToShorten, userRef: user._id })
       .then(res => {
         console.log(res.data);
         getAllUrls();
